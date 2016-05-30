@@ -1,7 +1,7 @@
 package com.augmate.test;
 
-import com.couchpod.api.ApiBootstrap;
-import com.couchpod.api.ApiConfiguration;
+import com.couchpod.ApiBootstrap;
+import com.couchpod.ApiConfiguration;
 import io.dropwizard.testing.junit.DropwizardAppRule;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;

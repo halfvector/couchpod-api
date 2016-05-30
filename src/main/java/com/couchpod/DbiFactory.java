@@ -1,4 +1,4 @@
-package com.couchpod.api;
+package com.couchpod;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;

@@ -1,4 +1,4 @@
-package com.couchpod.api;
+package com.couchpod;
 
 
 import com.couchpod.healthchecks.LoadBalancerPing;
@@ -32,7 +32,7 @@ public class ApiBootstrap extends Application<ApiConfiguration> {
         GuiceBundle<ApiConfiguration> guiceBundle = GuiceBundle.<ApiConfiguration>newBuilder()
                 .addModule(new RuntimeModule())
                 .setConfigClass(ApiConfiguration.class)
-                .enableAutoConfig(getClass().getPackage().getName())
+                .enableAutoConfig("com.augmate.api")
                 .build();
         bootstrap.addBundle(guiceBundle);
 

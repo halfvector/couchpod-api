@@ -1,4 +1,4 @@
-package com.couchpod.api;
+package com.couchpod;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.dropwizard.Configuration;

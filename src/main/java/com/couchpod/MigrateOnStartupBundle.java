@@ -1,4 +1,4 @@
-package com.couchpod.api;
+package com.couchpod;
 
 import io.dropwizard.ConfiguredBundle;
 import io.dropwizard.setup.Bootstrap;

@@ -20,7 +20,7 @@ targetCompatibility = '1.8'
 
 group 'com.couchpod'
 version '0.0.1'
-mainClassName = 'com.couchpod.api.ApiBootstrap'
+mainClassName = 'com.couchpod.ApiBootstrap'
 
 // Set our project variables
 project.ext {

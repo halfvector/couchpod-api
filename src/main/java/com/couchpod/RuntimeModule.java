@@ -1,4 +1,4 @@
-package com.couchpod.api;
+package com.couchpod;
 
 import com.couchpod.api.streams.StreamDAO;
 import com.couchpod.api.streams.StreamResource;
