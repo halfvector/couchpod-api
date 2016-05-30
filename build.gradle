@@ -1,0 +1,95 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+}
+
+repositories {
+    jcenter()
+}
+
+apply plugin: 'java'
+apply plugin: 'application'
+apply plugin: 'idea'
+
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+
+// UTF-8 should be standard by now. So use it!
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+
+group 'com.couchpod'
+version '0.0.1'
+mainClassName = 'com.couchpod.api.ApiBootstrap'
+
+// Set our project variables
+project.ext {
+    dropwizardVersion = '0.9.2'
+}
+
+run {
+//    jvmArgs = ["-javaagent:${new File("bin/springloaded-1.2.5.RELEASE.jar").absolutePath}", '-noverify']
+
+    if (System.getenv('COUCHPOD_ENVIRONMENT')) {
+        args = ['server', 'src/dist/config/' + System.getenv('COUCHPOD_ENVIRONMENT') + '.yml']
+    } else {
+        args = ['server', 'src/dist/config/localhost.yml']
+    }
+}
+
+dependencies {
+
+    // Dropwizard Core
+    compile 'io.dropwizard:dropwizard-core:' + dropwizardVersion
+//    compile 'io.dropwizard:dropwizard-hibernate:' + dropwizardVersion
+    compile 'io.dropwizard:dropwizard-auth:' + dropwizardVersion
+    compile 'io.dropwizard:dropwizard-forms:' + dropwizardVersion
+    compile 'io.dropwizard:dropwizard-jdbi:' + dropwizardVersion
+    compile 'io.dropwizard:dropwizard-views:' + dropwizardVersion
+    compile 'io.dropwizard:dropwizard-views-freemarker:' + dropwizardVersion
+
+    // Dependency Injection
+    compile 'com.hubspot.dropwizard:dropwizard-guice:0.8.4.0'
+    compile 'com.google.inject:guice:3.0'
+
+    // DB Migrations
+    compile 'io.dropwizard.modules:dropwizard-flyway:' + dropwizardVersion + '-1'
+
+    compile 'org.modelmapper:modelmapper:0.7.5'
+
+    // HTTP Client
+    compile 'com.squareup.retrofit2:retrofit:2.0.2'
+    compile 'com.squareup.retrofit2:converter-gson:2.0.0'
+
+    // Dropwizard extensions
+//    compile('com.dcsquare:dropwizard-papertrail:1.1') {
+//        exclude group: 'org.slf4j', module: 'slf4j-log4j12'
+//    }
+//    compile 'com.jamierf.dropwizard:dropwizard-logging-loggly:0.6'
+
+    // Metrics
+//    compile 'io.dropwizard.metrics:metrics-core:3.1.0'
+
+//    compile 'com.h2database:h2:1.3.168'
+//    compile 'org.antlr:stringtemplate:3.2.1'
+
+    // SQL + ADO
+    compile 'com.zaxxer:HikariCP:2.3.2'
+    compile 'com.hubspot.rosetta:RosettaJdbi:3.0'
+    // NOTE: 5.1.35 will add noTimezoneConversionForDateType && cacheDefaultTimezone
+    // which may fix issues with Date<->Timestamp timezone conversions
+    compile 'mysql:mysql-connector-java:5.1.34'
+
+    // better dropwizard config with variables and includes
+//    compile 'de.thomaskrille:dropwizard-template-config:1.0.0'
+
+    // a fluent interface builder library
+//    compile 'com.github.davidmarquis:fluent-interface-proxy:1.3.0'
+
+    // Testing
+    testCompile 'org.hamcrest:hamcrest-all:1.3'
+    testCompile 'junit:junit:4.12'
+//    testCompile 'org.mockito:mockito-all:1.10.8'
+    testCompile 'com.squareup.retrofit:retrofit:1.9.0'
+    testCompile 'io.dropwizard:dropwizard-testing:' + dropwizardVersion
+}

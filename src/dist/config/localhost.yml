@@ -1,0 +1,65 @@
+# local development
+environment: 'localhost'
+migrateOnStartup: true
+
+# hostname of website authing against this api (localhost, web.dockerhost.local, dev.augmate.com, etc)
+# cookies will be generated for this domain (must have same domain name, sub-domains may differ)
+# setting cookieDomain to be null for localhost is recommended for max browser compatibility
+cookieDomain:
+cookieAccessTokenName: "access_token_localhost"
+
+# local development database
+database:
+  driverClass: com.mysql.jdbc.Driver
+  user: root
+  password:
+  url: jdbc:mysql://localhost:3306/couchpod
+
+# HTTP server and admin panel
+server:
+  applicationConnectors:
+    - type: http
+      port: 5000
+  adminConnectors:
+    - type: http
+      port: 5001
+
+  requestLog:
+    timeZone: EST
+    appenders:
+      - type: console
+        target: stdout
+
+logging:
+  # default level of all loggers. Can be OFF, ERROR, WARN, INFO, DEBUG, TRACE, or ALL.
+  # JSON parsing errors require level=DEBUG
+  level: DEBUG
+
+  # namespace specific minimum logging levels
+  loggers:
+    org.hibernate.SQL: DEBUG
+    org.apache: WARN
+    com.amazonaws: WARN
+    org.apache.http.wire: WARN
+    org.eclipse.jetty: INFO
+    io.dropwizard.jersey: WARN
+    org.quartz: WARN
+    io.dropwizard: INFO
+    org.quartz.QuartzScheduler: WARN
+    com.zaxxer.hikari: WARN
+    com.zaxxer.hikari.pool: WARN
+    io.federecio.dropwizard.swagger: WARN
+    org.flywaydb: INFO
+    com.stormpath.sdk.impl.api.ClientApiKeyBuilder: INFO
+    com.stormpath.sdk.impl.http.authc.SAuthc1RequestAuthenticator: INFO
+    com.codahale.metrics.JmxReporter: INFO
+    HikariPool: INFO
+    org.eclipse: WARN
+
+  appenders:
+    # everything to stdout
+    - type: console
+      target: stdout
+      logFormat: "%-5p %c > %message %rEx%n"
+      #logFormat: "%-5p [%d{ISO8601}] [%mdc{OriginRequestId}] [%mdc{CurrentAccountId}] %c: %m%n%xEx"
+      threshold: DEBUG
