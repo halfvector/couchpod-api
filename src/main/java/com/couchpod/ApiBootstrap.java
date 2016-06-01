@@ -32,17 +32,9 @@ public class ApiBootstrap extends Application<ApiConfiguration> {
         GuiceBundle<ApiConfiguration> guiceBundle = GuiceBundle.<ApiConfiguration>newBuilder()
                 .addModule(new RuntimeModule())
                 .setConfigClass(ApiConfiguration.class)
-                .enableAutoConfig("com.augmate.api")
+                .enableAutoConfig(getClass().getPackage().getName())
                 .build();
         bootstrap.addBundle(guiceBundle);
-
-        // flyway migration support
-        bootstrap.addBundle(new FlywayBundle<ApiConfiguration>() {
-            @Override
-            public DataSourceFactory getDataSourceFactory(ApiConfiguration configuration) {
-                return configuration.getDataSourceFactory();
-            }
-        });
 
         bootstrap.addBundle(new MultiPartBundle());
 
@@ -57,7 +49,8 @@ public class ApiBootstrap extends Application<ApiConfiguration> {
         allowRequestsFromAnywhere(environment);
 
         // configure jackson json serialization/deserialization
-        environment.getObjectMapper().disable(SerializationFeature.FAIL_ON_EMPTY_BEANS); // makes JsonUnrecognizedPropertyException work
+        // SerializationFeature.FAIL_ON_EMPTY_BEANS enables JsonUnrecognizedPropertyException
+        environment.getObjectMapper().disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
 
         // register health checks
         environment.healthChecks().register("ping", new LoadBalancerPing());

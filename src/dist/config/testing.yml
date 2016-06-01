@@ -14,6 +14,9 @@ database:
   user: root
   password:
   url: jdbc:mysql://localhost:3306/couchpod_testing
+  initialSize: 1
+  maxSize: 5
+  minSize: 1
 
 # HTTP server and admin panel
 server:
@@ -33,28 +36,11 @@ server:
 logging:
   # default level of all loggers. Can be OFF, ERROR, WARN, INFO, DEBUG, TRACE, or ALL.
   # JSON parsing errors require level=DEBUG
-  level: DEBUG
+  level: WARN
 
   # namespace specific minimum logging levels
   loggers:
-    org.hibernate.SQL: DEBUG
-    org.apache: WARN
-    com.amazonaws: WARN
-    org.apache.http.wire: WARN
-    org.eclipse.jetty: INFO
-    io.dropwizard.jersey: WARN
-    org.quartz: WARN
-    io.dropwizard: INFO
-    org.quartz.QuartzScheduler: WARN
-    com.zaxxer.hikari: WARN
-    com.zaxxer.hikari.pool: WARN
-    io.federecio.dropwizard.swagger: WARN
-    org.flywaydb: INFO
-    com.stormpath.sdk.impl.api.ClientApiKeyBuilder: INFO
-    com.stormpath.sdk.impl.http.authc.SAuthc1RequestAuthenticator: INFO
-    com.codahale.metrics.JmxReporter: INFO
-    HikariPool: INFO
-    org.eclipse: WARN
+    com.augmate: INFO
 
   appenders:
     # everything to stdout

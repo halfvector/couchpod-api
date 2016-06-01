@@ -1,8 +1,11 @@
 CREATE TABLE users (
-  id            SERIAL PRIMARY KEY,
-  fullName      VARCHAR(255),
+  userId            SERIAL PRIMARY KEY,
+  email         VARCHAR(128) NOT NULL,
+  fullName      VARCHAR(128) NOT NULL,
   createdAt     BIGINT DEFAULT NULL,
-  twitterHandle VARCHAR(255)
+  twitterHandle VARCHAR(128),
+
+  UNIQUE (email)
 );
 
 CREATE TABLE streams (
@@ -25,4 +28,4 @@ CREATE TABLE streamContributors (
   contributorType INT UNSIGNED    NOT NULL,
 
   PRIMARY KEY (userId, streamId)
-)
+);

@@ -1,7 +1,7 @@
 package com.couchpod.api.users;
 
-public class UserEntity {
-    public Long userId;
+public class UserRegistrationRequestDTO {
     public String email;
     public String fullName;
+    public String password;
 }

@@ -60,7 +60,6 @@ public class DbiFactory {
         config.setInitializationFailFast(false); // continue even if server is down on startup (lazy-init for docker+fig)
         config.setConnectionTimeout(10 * 1000); // timeout in milliseconds
         //config.setLeakDetectionThreshold(5000); // dump stacktraces of db.open() that haven't been closed for threshold
-        //config.setMaximumPoolSize(10); // max connections per pool (when reached, new connections will timeout)
 
         config.addDataSourceProperty("cachePrepStmts", "true");
         config.addDataSourceProperty("prepStmtCacheSize", "250");

@@ -1,7 +1,7 @@
 package com.couchpod.api.users;
 
-import com.couchpod.api.streams.CreateStreamRequestDTO;
-import com.couchpod.mapping.MapAs;
+import com.couchpod.exceptions.DbExceptions;
+import com.couchpod.mapping.Mapping;
 import com.google.inject.Inject;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -15,12 +15,10 @@ import java.util.List;
 public class UserResource {
     private static final Logger log = LoggerFactory.getLogger(UserResource.class);
 
+    @Inject
     private UserDAO userDao;
 
-    @Inject
-    public UserResource(UserDAO dao) {
-        this.userDao = dao;
-    }
+    private ModelMapper modelMapper = new UserMapper().getModelMapper();
 
     /**
      * Returns 200 (OK), 409 (Conflict)
@@ -28,33 +26,44 @@ public class UserResource {
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Long create(CreateStreamRequestDTO createStreamRequestDTO) {
-        // Use ModelMapper to automatically map request-DTO to db-Entity.
-        // When the models begin to drift, add explicit mapping rules.
-        UserEntity entity = new ModelMapper().map(createStreamRequestDTO, UserEntity.class);
+    public Long createUser(UserRegistrationRequestDTO request) {
+        UserEntity entity = modelMapper.map(request, UserEntity.class);
 
-        return userDao.insert(entity);
+        try {
+            return userDao.insert(entity);
+        } catch (Exception error) {
+            if (DbExceptions.isConflict(error)) {
+                throw new WebApplicationException("User already exists", 409);
+            } else {
+                throw new WebApplicationException(error, 500);
+            }
+        }
     }
 
     /**
-     * Returns 200 (OK), 404 (Not Found)
+     * Returns 200 (OK)
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<UserDTO> index() {
+    public List<UserDTO> getListOfAllUsers() {
         List<UserEntity> entities = userDao.getAll();
-        return new ModelMapper().map(entities, MapAs.<UserDTO>list());
+        return modelMapper.map(entities, Mapping.<UserDTO>list());
     }
 
     /**
      * Returns 200 (OK), 404 (Not Found)
      */
     @GET
-    @Path("/:id")
+    @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public UserDTO one(Long id) {
+    public UserDTO getUserDetails(@PathParam("id") Long id) {
         UserEntity entity = userDao.getOne(id);
-        return new ModelMapper().map(entity, UserDTO.class);
+
+        if (entity == null) {
+            throw new WebApplicationException("User not found", 404);
+        }
+
+        return modelMapper.map(entity, UserDTO.class);
     }
 
 }

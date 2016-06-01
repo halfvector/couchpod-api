@@ -1,36 +1,33 @@
 package com.couchpod;
 
 import com.couchpod.api.streams.StreamDAO;
-import com.couchpod.api.streams.StreamResource;
-import com.google.inject.Binder;
-import com.google.inject.Inject;
-import com.google.inject.Module;
-import com.google.inject.Provides;
-import com.google.inject.name.Named;
+import com.couchpod.api.users.UserDAO;
+import com.couchpod.exceptions.DbiExceptionMapper;
+import com.google.inject.*;
 import org.skife.jdbi.v2.DBI;
 
 public class RuntimeModule implements Module {
+    private DbiFactory dbiFactory = new DbiFactory();
+
     @Provides
-    @Named("dbi")
+    @Inject
     public DBI dbi(ApiConfiguration configuration) {
-        return new DbiFactory().getDbi(configuration.getDataSourceFactory());
+        return dbiFactory.getDbi(configuration.getDataSourceFactory());
     }
 
     @Provides
     @Inject
-    @Named("streamDao")
-    public StreamDAO streamDao(@Named("dbi") DBI dbi) {
+    public StreamDAO streamDAO(DBI dbi) {
         return dbi.onDemand(StreamDAO.class);
     }
 
     @Provides
     @Inject
-    public StreamResource streamResource(@Named("streamDao") StreamDAO streamDao) {
-        return new StreamResource(streamDao);
+    public UserDAO userDAO(DBI dbi) {
+        return dbi.onDemand(UserDAO.class);
     }
 
     @Override
     public void configure(Binder binder) {
-
     }
 }

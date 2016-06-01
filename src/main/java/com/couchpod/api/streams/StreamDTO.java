@@ -1,6 +1,6 @@
 package com.couchpod.api.streams;
 
 public class StreamDTO {
-    public Long id;
+    public Long streamId;
     public String name;
 }

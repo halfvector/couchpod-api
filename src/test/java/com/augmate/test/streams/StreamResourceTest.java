@@ -1,8 +1,13 @@
 package com.augmate.test.streams;
 
-import com.augmate.test.ApiResourceTestRule;
+import com.augmate.test.ResourceTestBase;
+import com.augmate.test.users.UserTestingDAO;
+import com.couchpod.api.streams.CreateStreamRequestDTO;
 import com.couchpod.api.streams.StreamDTO;
-import org.junit.ClassRule;
+import com.couchpod.api.users.UserDTO;
+import com.couchpod.api.users.UserRegistrationRequestDTO;
+import com.google.inject.Inject;
+import org.junit.Before;
 import org.junit.Test;
 import retrofit2.Response;
 
@@ -13,9 +18,14 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
 
-public class StreamResourceTest {
-    @ClassRule
-    public static final ApiResourceTestRule Rule = new ApiResourceTestRule();
+public class StreamResourceTest extends ResourceTestBase {
+    @Inject
+    private StreamTestingDAO streamDAO;
+
+    @Before
+    public void before() {
+        streamDAO.deleteAll();
+    }
 
     @Test
     public void canListStreams() throws Exception {
@@ -31,4 +41,31 @@ public class StreamResourceTest {
         assertThat(execute.code(), is(404));
     }
 
+    @Test
+    public void whenFetchingExistingStreamReturn200() throws Exception {
+        // given we have a registered user
+        CreateStreamRequestDTO request = getSampleRegistrationRequest();
+        long streamId = api.createStream(request).execute().body();
+
+        // when fetching user details
+        Response<StreamDTO> response = api.getStreamDetails(streamId).execute();
+
+        // then http status code should be ok
+        assertThat(response.code(), is(200));
+
+        // and user should have a matching name
+        assertThat(response.body().name, is(request.streamName));
+    }
+
+    /*
+     * Helpers
+     */
+
+    private CreateStreamRequestDTO getSampleRegistrationRequest() {
+        CreateStreamRequestDTO request = new CreateStreamRequestDTO();
+        request.streamName = "A Public Stream";
+        request.description = "Default stream";
+        request.visibility = 0L;
+        return request;
+    }
 }
