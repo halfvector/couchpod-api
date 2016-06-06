@@ -3,7 +3,6 @@ package com.couchpod;
 import com.couchpod.authentication.AuthJwtAuthenticator;
 import com.couchpod.healthchecks.LoadBalancerPing;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.google.inject.Injector;
 import com.hubspot.dropwizard.guice.GuiceBundle;
 import io.dropwizard.Application;
 import io.dropwizard.forms.MultiPartBundle;
@@ -19,7 +18,7 @@ import java.io.UnsupportedEncodingException;
  */
 public class ApiServer extends Application<ApiConfig> {
     private static final Logger log = LoggerFactory.getLogger(ApiServer.class);
-    private Injector injector;
+    private GuiceBundle<ApiConfig> guiceBundle;
 
     public static void main(String... args) throws Exception {
         new ApiServer().run(args);
@@ -29,7 +28,7 @@ public class ApiServer extends Application<ApiConfig> {
     public void initialize(Bootstrap<ApiConfig> bootstrap) {
         String packageName = getClass().getPackage().getName();
 
-        GuiceBundle<ApiConfig> guiceBundle = GuiceBundle.<ApiConfig>newBuilder()
+        guiceBundle = GuiceBundle.<ApiConfig>newBuilder()
                 .addModule(new RuntimeModule())
                 .setConfigClass(ApiConfig.class)
                 .enableAutoConfig(packageName)
@@ -37,8 +36,6 @@ public class ApiServer extends Application<ApiConfig> {
 
         bootstrap.addBundle(guiceBundle);
         bootstrap.addBundle(new MultiPartBundle());
-
-        injector = guiceBundle.getInjector();
     }
 
     @Override
@@ -56,8 +53,8 @@ public class ApiServer extends Application<ApiConfig> {
         environment.healthChecks().register("ping", new LoadBalancerPing());
 
         // Authentication via JWT
-        AuthJwtAuthenticator authenticator = injector.getInstance(AuthJwtAuthenticator.class);
-        new ApiSetupAuth().configure(environment.jersey(), authenticator,
+        new ApiSetupAuth().configure(environment.jersey(),
+                guiceBundle.getInjector().getInstance(AuthJwtAuthenticator.class),
                 configuration.getJwtTokenSecret(), configuration.cookieAccessTokenName);
     }
 }
