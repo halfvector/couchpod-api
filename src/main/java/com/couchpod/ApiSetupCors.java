@@ -7,7 +7,7 @@ import javax.servlet.DispatcherType;
 import javax.servlet.FilterRegistration;
 import java.util.EnumSet;
 
-public class CorsConfiguration {
+public class ApiSetupCors {
     public void allowRequestsFromAnywhere(ServletEnvironment servlets) {
         final FilterRegistration.Dynamic cors = servlets.addFilter("CORS", CrossOriginFilter.class);
 

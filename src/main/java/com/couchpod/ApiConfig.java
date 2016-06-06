@@ -9,9 +9,9 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.UnsupportedEncodingException;
 
-public class ApiConfiguration extends Configuration {
+public class ApiConfig extends Configuration {
     @NotEmpty
-    private String jwtTokenSecret = "jwt token secret string is going to be pretty long and contain a bit of useful data here";
+    private String jwtTokenSecret;
 
     public byte[] getJwtTokenSecret() throws UnsupportedEncodingException {
         return jwtTokenSecret.getBytes("UTF-8");

@@ -14,11 +14,11 @@ import javax.sql.DataSource;
 /**
  * Ensures migrations are run on startup when API is in "localhost" mode
  */
-public class MigrateOnStartupBundle implements ConfiguredBundle<ApiConfiguration> {
+public class MigrateOnStartupBundle implements ConfiguredBundle<ApiConfig> {
     private static final Logger log = LoggerFactory.getLogger(MigrateOnStartupBundle.class);
 
     @Override
-    public void run(ApiConfiguration configuration, Environment environment) throws Exception {
+    public void run(ApiConfig configuration, Environment environment) throws Exception {
         if (!configuration.getMigrateOnStartup()) {
             log.info("Configuration says not to migrate on startup. Skipping migrations.");
             return;
@@ -51,7 +51,7 @@ public class MigrateOnStartupBundle implements ConfiguredBundle<ApiConfiguration
         log.info("Running migrations.. Done");
     }
 
-    private void waitForDatabase(ApiConfiguration configuration) throws InterruptedException {
+    private void waitForDatabase(ApiConfig configuration) throws InterruptedException {
         DBI jdbi = new DbiFactory().getDbi(configuration.getDataSourceFactory());
 
         log.debug("Waiting for Database..");

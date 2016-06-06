@@ -1,4 +1,4 @@
-package com.couchpod;
+package com.couchpod.authentication;
 
 import com.couchpod.api.users.TokenDTO;
 import org.jose4j.jws.AlgorithmIdentifiers;

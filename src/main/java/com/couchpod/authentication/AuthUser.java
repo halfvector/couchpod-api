@@ -1,4 +1,4 @@
-package com.couchpod;
+package com.couchpod.authentication;
 
 import java.security.Principal;
 

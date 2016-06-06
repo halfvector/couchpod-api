@@ -1,4 +1,4 @@
-package com.couchpod;
+package com.couchpod.authentication;
 
 import com.couchpod.api.users.UserDAO;
 import com.couchpod.api.users.UserEntity;
@@ -10,7 +10,7 @@ import io.dropwizard.auth.Authenticator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class AuthJwtAuthenticator implements Authenticator<JsonWebToken, AuthUser> {
+public class AuthJwtAuthenticator implements Authenticator<JsonWebToken, AuthUser> {
     private static final Logger log = LoggerFactory.getLogger(AuthJwtAuthenticator.class);
 
     @Inject
@@ -18,6 +18,7 @@ class AuthJwtAuthenticator implements Authenticator<JsonWebToken, AuthUser> {
 
     @Override
     public Optional<AuthUser> authenticate(JsonWebToken token) {
+
         new ExpiryValidator().validate(token);
 
         Long userId = Long.parseLong(token.claim().subject());

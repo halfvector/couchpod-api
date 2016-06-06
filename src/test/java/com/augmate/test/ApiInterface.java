@@ -13,6 +13,10 @@ import retrofit2.http.*;
 import java.util.List;
 
 public interface ApiInterface {
+    /*
+     * Stream CRUD
+     */
+
     @POST("streams")
     Call<Long> createStream(@Body CreateStreamRequestDTO request);
 
@@ -21,6 +25,10 @@ public interface ApiInterface {
 
     @GET("streams/{id}")
     Call<StreamDTO> getStreamDetails(@Path("id") long streamId);
+
+    /*
+     * User CRUD
+     */
 
     @POST("users")
     Call<Long> registerUser(@Body UserRegistrationRequestDTO request);
@@ -31,18 +39,26 @@ public interface ApiInterface {
     @GET("users/{id}")
     Call<UserDTO> getUserDetails(@Path("id") long userId);
 
+    /*
+     * Stream Contributor assignment
+     */
+
     @GET("contributors")
     Call<Void> setStreamContributor(@Body ContributorDTO relationship);
 
     @DELETE("contributors")
     Call<Void> removeStreamContributor(@Body ContributorDTO relationship);
 
-    @POST("users/login")
+    /*
+     * Authentication
+     */
+
+    @POST("tokens")
     Call<LoginResponseDTO> login(@Body LoginRequestDTO dto);
 
-    @POST("users/logout")
+    @DELETE("tokens")
     Call<Void> logout();
 
-    @GET("users/get_current")
+    @GET("tokens/current")
     Call<UserDTO> getCurrentUser();
 }

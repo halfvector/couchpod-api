@@ -3,6 +3,7 @@ package com.couchpod;
 import com.couchpod.api.contributors.ContributorDAO;
 import com.couchpod.api.streams.StreamDAO;
 import com.couchpod.api.users.UserDAO;
+import com.couchpod.authentication.AuthJwtGenerator;
 import com.google.inject.Binder;
 import com.google.inject.Inject;
 import com.google.inject.Module;
@@ -16,7 +17,7 @@ public class RuntimeModule implements Module {
 
     @Provides
     @Inject
-    public DBI dbi(ApiConfiguration configuration) {
+    public DBI dbi(ApiConfig configuration) {
         return dbiFactory.getDbi(configuration.getDataSourceFactory());
     }
 
@@ -40,7 +41,7 @@ public class RuntimeModule implements Module {
 
     @Provides
     @Inject
-    public AuthJwtGenerator getTokenGenerator(ApiConfiguration configuration) throws UnsupportedEncodingException {
+    public AuthJwtGenerator getTokenGenerator(ApiConfig configuration) throws UnsupportedEncodingException {
         return new AuthJwtGenerator(configuration.getJwtTokenSecret());
     }
 

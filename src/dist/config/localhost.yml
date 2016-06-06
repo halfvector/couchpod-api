@@ -8,6 +8,8 @@ migrateOnStartup: true
 cookieDomain:
 cookieAccessTokenName: "access_token_localhost"
 
+jwtTokenSecret: '80D49E79B103C6E20ECAB92DD289A6FE8D4F92D434B0FF894E086BEB792E33EE'
+
 # local development database
 database:
   driverClass: com.mysql.jdbc.Driver

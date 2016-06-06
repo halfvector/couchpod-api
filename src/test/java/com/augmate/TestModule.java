@@ -2,7 +2,7 @@ package com.augmate;
 
 import com.augmate.test.streams.StreamTestingDAO;
 import com.augmate.test.users.UserTestingDAO;
-import com.couchpod.ApiConfiguration;
+import com.couchpod.ApiConfig;
 import com.couchpod.DbiFactory;
 import com.google.inject.Binder;
 import com.google.inject.Inject;
@@ -11,10 +11,10 @@ import com.google.inject.Provides;
 import org.skife.jdbi.v2.DBI;
 
 public class TestModule implements Module {
-    private ApiConfiguration configuration;
+    private ApiConfig configuration;
     private DbiFactory dbiFactory = new DbiFactory();
 
-    public TestModule(ApiConfiguration apiConfiguration) {
+    public TestModule(ApiConfig apiConfiguration) {
         this.configuration = apiConfiguration;
     }
 
