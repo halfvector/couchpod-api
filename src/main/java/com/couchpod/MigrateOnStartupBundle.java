@@ -39,6 +39,14 @@ public class MigrateOnStartupBundle implements ConfiguredBundle<ApiConfiguration
         //   the resulting remote schema and therefore functionality now differs from what was visible in local dev/test.
         // so we manually repair the db because it ensures nothing is missed in testing
 
+        /**
+         * When running automated tests, clean database before running migrations.
+         * This makes it easier to evolve schemas locally in response to test results.
+         */
+        if ("testing".equals(configuration.getEnvironment())) {
+            flyway.clean();
+        }
+
         flyway.migrate();
         log.info("Running migrations.. Done");
     }

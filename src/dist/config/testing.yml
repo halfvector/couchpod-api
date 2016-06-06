@@ -6,7 +6,7 @@ migrateOnStartup: true
 # cookies will be generated for this domain (must have same domain name, sub-domains may differ)
 # setting cookieDomain to be null for localhost is recommended for max browser compatibility
 cookieDomain:
-cookieAccessTokenName: "access_token_localhost"
+cookieAccessTokenName: "access_token_testing"
 
 # local development database
 database:

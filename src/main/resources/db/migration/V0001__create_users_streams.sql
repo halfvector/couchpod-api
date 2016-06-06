@@ -1,6 +1,7 @@
 CREATE TABLE users (
-  userId            SERIAL PRIMARY KEY,
+  userId        SERIAL PRIMARY KEY,
   email         VARCHAR(128) NOT NULL,
+  password      VARCHAR(128) NOT NULL,
   fullName      VARCHAR(128) NOT NULL,
   createdAt     BIGINT DEFAULT NULL,
   twitterHandle VARCHAR(128),

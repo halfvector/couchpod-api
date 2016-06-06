@@ -1,11 +1,16 @@
 package com.augmate.test.users;
 
+import com.augmate.test.ApiInterface;
 import com.augmate.test.ResourceTestBase;
+import com.couchpod.api.users.LoginRequestDTO;
+import com.couchpod.api.users.LoginResponseDTO;
 import com.couchpod.api.users.UserDTO;
 import com.couchpod.api.users.UserRegistrationRequestDTO;
 import com.google.inject.Inject;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import retrofit2.Response;
@@ -15,6 +20,7 @@ import java.util.List;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
+@RunWith(JUnit4.class)
 public class UserResourceTest extends ResourceTestBase {
     private static final Logger log = LoggerFactory.getLogger(UserResourceTest.class);
 
@@ -75,6 +81,38 @@ public class UserResourceTest extends ResourceTestBase {
 
         // and user should have a matching name
         assertThat(response.body().fullName, is(request.fullName));
+    }
+
+    @Test
+    public void newUserCanAccessAuthenticatedEndpoints() throws Exception {
+        UserRegistrationRequestDTO newUserRequest = new UserRegistrationRequestDTO();
+        newUserRequest.fullName = "Alex";
+        newUserRequest.password = "this is a password";
+        newUserRequest.email = "aleckz@gmail.com";
+        api.registerUser(newUserRequest).execute();
+
+        // when asking for a json web token
+        LoginRequestDTO loginRequest = new LoginRequestDTO();
+        loginRequest.email = newUserRequest.email;
+        loginRequest.password = newUserRequest.password;
+        Response<LoginResponseDTO> loginResponse = api.login(loginRequest).execute();
+
+        // then http status code should be ok
+        assertThat(loginResponse.code(), is(200));
+
+        ApiInterface authenticatedApi = Rule.getAuthenticatedApi(loginResponse.body().token);
+
+        Response<UserDTO> currentUserResponse = authenticatedApi.getCurrentUser().execute();
+
+        assertThat(currentUserResponse.code(), is(200));
+        assertThat(currentUserResponse.body().fullName, is(newUserRequest.fullName));
+    }
+
+    @Test
+    public void loggedOutUserHasNoAuth() throws Exception {
+        Response<UserDTO> currentUserResponse = api.getCurrentUser().execute();
+
+        assertThat(currentUserResponse.code(), is(401));
     }
 
     /*

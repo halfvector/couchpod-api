@@ -55,6 +55,8 @@ logging:
     com.codahale.metrics.JmxReporter: INFO
     HikariPool: INFO
     org.eclipse: WARN
+    org.jose4j: INFO
+    org.hibernate.validator: INFO
 
   appenders:
     # everything to stdout

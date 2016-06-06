@@ -16,7 +16,7 @@ public interface UserDAO {
      * Throw on name unique constraint violation
      */
     @GetGeneratedKeys
-    @SqlUpdate("INSERT INTO `users` SET fullName=:fullName, email=:email")
+    @SqlUpdate("INSERT INTO `users` SET fullName=:fullName, email=:email, password=:password")
     long insert(@BindWithRosetta UserEntity entity);
 
     @SqlUpdate("UPDATE `users` SET fullName=:fullName WHERE userId = :userId")
@@ -33,4 +33,7 @@ public interface UserDAO {
 
     @SqlQuery("SELECT * FROM `users` WHERE userId = :userId")
     UserEntity getOne(@Bind("userId") long userId);
+
+    @SqlQuery("SELECT count(*) AS `match` FROM `users` WHERE email = :email AND password = :password")
+    boolean passwordIsCorrect(@Bind("email") String email, @Bind("password") String password);
 }

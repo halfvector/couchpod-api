@@ -14,6 +14,7 @@ public class UserMapper {
         protected void configure() {
             map(source.fullName, destination.fullName);
             map(source.email, destination.email);
+            map(source.password, destination.password);
         }
     }
 

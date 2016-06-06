@@ -1,52 +1,66 @@
 package com.couchpod;
 
-
+import com.couchpod.api.users.UserDAO;
+import com.couchpod.api.users.UserEntity;
 import com.couchpod.healthchecks.LoadBalancerPing;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.github.toastshaman.dropwizard.auth.jwt.JWTAuthFilter;
+import com.github.toastshaman.dropwizard.auth.jwt.hmac.HmacSHA256Verifier;
+import com.github.toastshaman.dropwizard.auth.jwt.parser.DefaultJsonWebTokenParser;
+import com.google.inject.Inject;
+import com.google.inject.Injector;
 import com.hubspot.dropwizard.guice.GuiceBundle;
 import io.dropwizard.Application;
-import io.dropwizard.db.DataSourceFactory;
-import io.dropwizard.flyway.FlywayBundle;
+import io.dropwizard.auth.AuthDynamicFeature;
+import io.dropwizard.auth.AuthValueFactoryProvider;
+import io.dropwizard.auth.Authorizer;
 import io.dropwizard.forms.MultiPartBundle;
 import io.dropwizard.setup.Environment;
-import org.eclipse.jetty.servlets.CrossOriginFilter;
+import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
+import org.jose4j.jwt.consumer.JwtConsumer;
+import org.jose4j.jwt.consumer.JwtConsumerBuilder;
+import org.jose4j.keys.HmacKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.DispatcherType;
-import javax.servlet.FilterRegistration;
-import java.util.EnumSet;
+import java.io.UnsupportedEncodingException;
+import java.security.Principal;
 
 /**
- * API Entry Point
+ * The entry point. Configure and start Dropwizard API service.
  */
 public class ApiBootstrap extends Application<ApiConfiguration> {
     private static final Logger log = LoggerFactory.getLogger(ApiBootstrap.class);
+    private Injector injector;
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String... args) throws Exception {
         new ApiBootstrap().run(args);
     }
 
     @Override
     public void initialize(io.dropwizard.setup.Bootstrap bootstrap) {
+        String packageName = getClass().getPackage().getName();
+
         GuiceBundle<ApiConfiguration> guiceBundle = GuiceBundle.<ApiConfiguration>newBuilder()
                 .addModule(new RuntimeModule())
                 .setConfigClass(ApiConfiguration.class)
-                .enableAutoConfig(getClass().getPackage().getName())
+                .enableAutoConfig(packageName)
                 .build();
         bootstrap.addBundle(guiceBundle);
+
+        injector = guiceBundle.getInjector();
 
         bootstrap.addBundle(new MultiPartBundle());
 
         // run db migrations on startup depending on environment settings
-        bootstrap.addBundle(new MigrateOnStartupBundle());
+//        bootstrap.addBundle(new MigrateOnStartupBundle());
     }
 
     //
     @Override
-    public void run(ApiConfiguration configuration, Environment environment) {
+    public void run(ApiConfiguration configuration, Environment environment) throws UnsupportedEncodingException {
         // CORS: allow requests from anywhere
-        allowRequestsFromAnywhere(environment);
+        new CorsConfiguration().allowRequestsFromAnywhere(environment.servlets());
 
         // configure jackson json serialization/deserialization
         // SerializationFeature.FAIL_ON_EMPTY_BEANS enables JsonUnrecognizedPropertyException
@@ -57,17 +71,33 @@ public class ApiBootstrap extends Application<ApiConfiguration> {
 
         String augmateEnvironment = configuration.getEnvironment();
         log.info("Running in {} environment", augmateEnvironment);
+
+        // setup auth
+        configureAuth(configuration, environment);
     }
 
-    private void allowRequestsFromAnywhere(Environment environment) {
-        final FilterRegistration.Dynamic cors = environment.servlets().addFilter("CORS", CrossOriginFilter.class);
+    private void configureAuth(ApiConfiguration configuration, Environment environment) throws UnsupportedEncodingException {
+        final byte[] key = configuration.getJwtTokenSecret();
 
-        // Configure CORS parameters
-        cors.setInitParameter("allowedOrigins", "*");
-        cors.setInitParameter("allowedHeaders", "Tenant-ID,X-Requested-With,Content-Type,Accept,Origin");
-        cors.setInitParameter("allowedMethods", "OPTIONS,GET,PUT,POST,DELETE,HEAD");
+        final JwtConsumer consumer = new JwtConsumerBuilder()
+                .setAllowedClockSkewInSeconds(30) // allow some leeway in validating time based claims to account for clock skew
+                .setRequireExpirationTime() // the JWT must have an expiration time
+                .setRequireSubject() // the JWT must have a subject claim
+                .setVerificationKey(new HmacKey(key)) // verify the signature with the public key
+                .setRelaxVerificationKeyValidation() // relaxes key length requirement
+                .build(); // create the JwtConsumer instance
 
-        // Add URL mapping
-        cors.addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
+        environment.jersey().register(new AuthDynamicFeature(
+                new JWTAuthFilter.Builder<AuthUser>()
+                        .setTokenParser(new DefaultJsonWebTokenParser())
+                        .setTokenVerifier(new HmacSHA256Verifier(key))
+                        .setCookieName(configuration.cookieAccessTokenName)
+                        .setRealm("realm")
+                        .setPrefix("Bearer")
+                        .setAuthenticator(injector.getInstance(AuthJwtAuthenticator.class))
+                        .buildAuthFilter()));
+
+        environment.jersey().register(new AuthValueFactoryProvider.Binder<>(Principal.class));
+        environment.jersey().register(RolesAllowedDynamicFeature.class);
     }
 }

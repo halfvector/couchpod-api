@@ -3,11 +3,20 @@ package com.couchpod;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.dropwizard.Configuration;
 import io.dropwizard.db.DataSourceFactory;
+import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.io.UnsupportedEncodingException;
 
 public class ApiConfiguration extends Configuration {
+    @NotEmpty
+    private String jwtTokenSecret = "jwt token secret string is going to be pretty long and contain a bit of useful data here";
+
+    public byte[] getJwtTokenSecret() throws UnsupportedEncodingException {
+        return jwtTokenSecret.getBytes("UTF-8");
+    }
+
 //    @Valid
 //    @NotNull
 //    public SundialConfiguration sundialConfiguration = new SundialConfiguration();
