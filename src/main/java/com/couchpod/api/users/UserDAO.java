@@ -36,4 +36,7 @@ public interface UserDAO {
 
     @SqlQuery("SELECT count(*) AS `match` FROM `users` WHERE email = :email AND password = :password")
     boolean passwordIsCorrect(@Bind("email") String email, @Bind("password") String password);
+
+    @SqlQuery("SELECT * FROM `users` WHERE email = :email AND password = :password")
+    UserEntity findByAuthentication(@Bind("email") String email, @Bind("password") String password);
 }

@@ -8,6 +8,9 @@ migrateOnStartup: true
 cookieDomain:
 cookieAccessTokenName: "access_token_testing"
 
+# keep sessions alive for 1 hour
+maxSessionAgeSecs: 3600
+
 jwtTokenSecret: 'B57420FAF30AD393FDB0BB202CCBC96013271C99CA16A7AE354E58EFDCAC5894'
 
 # local development database

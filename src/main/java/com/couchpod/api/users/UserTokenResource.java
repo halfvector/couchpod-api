@@ -28,6 +28,9 @@ public class UserTokenResource {
     @Inject
     private AuthJwtGenerator tokenGenerator;
 
+    @Inject
+    private UserTokenService userTokenService;
+
     private ModelMapper modelMapper = new UserMapper().getModelMapper();
 
     /**
@@ -37,16 +40,13 @@ public class UserTokenResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response login(LoginRequestDTO dto) {
-        if (!userDao.passwordIsCorrect(dto.email, dto.password)) {
+        UserEntity userEntity = userDao.findByAuthentication(dto.email, dto.password);
+        if(userEntity == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
 
-        int maxAge = 60 * 60;
-        TokenDTO token = tokenGenerator.generateValidToken(1, maxAge);
-
-        String domain = configuration.cookieDomain;
-        NewCookie tokenCookie = new NewCookie(configuration.cookieAccessTokenName,
-                token.token, "/", domain, null, maxAge, false, true);
+        TokenDTO token = userTokenService.getToken(userEntity.userId);
+        NewCookie tokenCookie = userTokenService.getNewSessionCookie(token.token, configuration);
 
         LoginResponseDTO loginResponseDTO = new LoginResponseDTO();
         loginResponseDTO.token = token.token;

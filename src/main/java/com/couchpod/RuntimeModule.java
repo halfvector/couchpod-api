@@ -3,6 +3,7 @@ package com.couchpod;
 import com.couchpod.api.contributors.ContributorDAO;
 import com.couchpod.api.streams.StreamDAO;
 import com.couchpod.api.users.UserDAO;
+import com.couchpod.api.users.UserTokenService;
 import com.couchpod.authentication.AuthJwtGenerator;
 import com.google.inject.Binder;
 import com.google.inject.Inject;

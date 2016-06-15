@@ -27,6 +27,8 @@ public class ApiConfig extends Configuration {
     @JsonProperty("cookieAccessTokenName")
     public String cookieAccessTokenName;
 
+    public int maxSessionAgeSecs = 3600;
+
     @Valid
     @NotNull
     @JsonProperty("database")
