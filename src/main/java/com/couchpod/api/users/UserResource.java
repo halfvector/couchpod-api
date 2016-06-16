@@ -99,10 +99,8 @@ public class UserResource {
     @GET
     @Path("/current")
     @Produces(MediaType.APPLICATION_JSON)
-    public UserDTO getUserDetails(@Auth Principal principal) {
-        AuthUser authUser = (AuthUser) principal;
-
-        UserEntity entity = userDao.getOne(authUser.getUserId());
+    public UserDTO getUserDetails(@Auth AuthUser user) {
+        UserEntity entity = userDao.getOne(user.getUserId());
 
         if (entity == null) {
             throw new WebApplicationException("User not found", 404);

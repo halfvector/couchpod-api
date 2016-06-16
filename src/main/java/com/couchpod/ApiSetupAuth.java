@@ -25,7 +25,7 @@ public class ApiSetupAuth {
                         .setAuthenticator(authenticator)
                         .buildAuthFilter()));
 
-        jersey.register(new AuthValueFactoryProvider.Binder<>(Principal.class));
+        jersey.register(new AuthValueFactoryProvider.Binder<>(AuthUser.class));
         jersey.register(RolesAllowedDynamicFeature.class);
     }
 }

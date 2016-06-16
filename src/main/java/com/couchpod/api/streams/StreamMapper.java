@@ -16,7 +16,9 @@ public class StreamMapper {
 
     public static StreamDTO toDTO(StreamEntity entity) {
         return new StreamDTO() {{
-            this.name = entity.name;
+            this.streamName = entity.name;
+            this.isPublic = entity.visibility == 1;
+            this.streamId = entity.streamId;
         }};
     }
 }

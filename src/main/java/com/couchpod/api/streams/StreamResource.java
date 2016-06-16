@@ -1,8 +1,10 @@
 package com.couchpod.api.streams;
 
+import com.couchpod.authentication.AuthUser;
 import com.couchpod.exceptions.DbExceptions;
 import com.couchpod.mapping.Mapping;
 import com.google.inject.Inject;
+import io.dropwizard.auth.Auth;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,11 +25,10 @@ public class StreamResource {
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Long create(CreateStreamRequestDTO createStreamRequestDTO) {
+    public Long create(@Auth AuthUser user, CreateStreamRequestDTO createStreamRequestDTO) {
         StreamEntity entity = StreamMapper.fromDTO(createStreamRequestDTO);
 
-        // TODO: use current userId from @Auth object
-        entity.userId = 1L;
+        entity.userId = user.getUserId();
 
         try {
             return streamDao.insert(entity);
@@ -44,7 +45,7 @@ public class StreamResource {
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<StreamDTO> index() {
+    public List<StreamDTO> index(@Auth AuthUser user) {
         List<StreamEntity> entities = streamDao.getAll();
         return Mapping.map(entities, StreamMapper::toDTO);
     }
@@ -55,7 +56,7 @@ public class StreamResource {
     @GET
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public StreamDTO one(@PathParam("id") Long id) {
+    public StreamDTO one(@Auth AuthUser user, @PathParam("id") Long id) {
         StreamEntity entity = streamDao.getOne(id);
 
         if(entity == null) {

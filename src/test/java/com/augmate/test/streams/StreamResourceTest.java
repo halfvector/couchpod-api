@@ -1,11 +1,8 @@
 package com.augmate.test.streams;
 
 import com.augmate.test.ResourceTestBase;
-import com.augmate.test.users.UserTestingDAO;
 import com.couchpod.api.streams.CreateStreamRequestDTO;
 import com.couchpod.api.streams.StreamDTO;
-import com.couchpod.api.users.UserDTO;
-import com.couchpod.api.users.UserRegistrationRequestDTO;
 import com.google.inject.Inject;
 import org.junit.Before;
 import org.junit.Test;
@@ -54,7 +51,7 @@ public class StreamResourceTest extends ResourceTestBase {
         assertThat(response.code(), is(200));
 
         // and user should have a matching name
-        assertThat(response.body().name, is(request.streamName));
+        assertThat(response.body().streamName, is(request.streamName));
     }
 
     /*

@@ -60,8 +60,7 @@ public class UserTokenResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public UserDTO getCurrentUser(@Auth Principal principal) {
-        AuthUser user = (AuthUser) principal;
+    public UserDTO getCurrentUser(@Auth AuthUser user) {
         UserEntity entity = userDao.getOne(user.getUserId());
 
         if (entity == null) {
